@@ -11,12 +11,15 @@ function podcast_reviews_func( $atts ) {
 	$reviews = $PC->GetReviewsByPodcast( $podcast_id );
 	
 	$pages = $PC->GetShortcodePages();
-
-	/*
-	echo "<pre>";
-	print_r($reviews);
-	echo "</pre>";
-	*/
+	
+	if( get_current_user_id() == get_post_meta( $podcast_id, 'show_owner', true ) ) {
+		$show_owner = true;
+	}
+	
+	/*echo "<pre>";
+	print_r($podcast_info);
+	echo "</pre>";*/
+	
 
 	ob_start(); 
 	?>
@@ -52,7 +55,9 @@ function podcast_reviews_func( $atts ) {
 							$user_id = get_post_meta( $item['ID'], 'user_id')[0];
 							$user_info = get_user_by( 'ID', $user_id );
 							
-							//print_r($item);
+							$child_reviews = $PC->GetChildReviews( $item['ID'] );
+							
+							//print_r($child_reviews);
 							?>
 						
 							<li class="">
@@ -86,7 +91,6 @@ function podcast_reviews_func( $atts ) {
 
 								<? if( $can_edit ) { ?>
 									
-									
 									<a 
 										href="#popup-edit-review" 
 										class="popup-leave-review popup-open" 
@@ -108,7 +112,66 @@ function podcast_reviews_func( $atts ) {
 									
 								<? } ?>
 								
+								<? if( $show_owner ) { ?>
+									
+									<a 
+										href="#popup-response-to-review" 
+										class="popup-response-to-review popup-open" 
+										id="link-response-to-review"
+										data-review-id="<? echo $item['ID']; ?>"> 
+										<button class="btnpd"><i class="fa fa-reply"></i> Respond</button>
+									</a>
+									
+								<? } ?>
+								
 							</li>
+							
+							<? if( count( $child_reviews ) > 0 ) { ?>
+							
+								<? foreach( $child_reviews as $response ) { ?>
+								
+									<li class="response">
+									
+										<div>
+											<p class="note" style="float: left; width: 75%;">
+												<span class="yellow">Author's response on</span> 
+												<? echo date( 'Y-m-d', strtotime($response['post_date']) ); ?>
+											</p>
+											
+											<div style="clear: both;"></div>
+											
+										</div>
+										
+										<p class="content"> <? echo $response['content']; ?> </p>
+										<br/>
+									
+										<? if( $can_edit ) { ?>
+											
+											<a 
+												href="#popup-edit-response" 
+												class="popup-edit-response link-edit-response popup-open" 
+												data-id="<? echo $response['ID']; ?>"> 
+												<button class="btnpd"><i class="fa fa-edit"></i> Edit Response</button>
+											</a>
+											
+										<? } ?>
+										
+										<? if( $is_admin ) { ?>
+											
+											<a 
+												href="?podcast=<? echo $podcast_id; ?>&action=delete_review&id=<? echo $response['ID']; ?>" 
+												class="" onclick="if( confirm('Are you sure?') ) { return true; }"> 
+												<? if( $can_edit ) { ?><? } ?>
+												<button class="btnpd"><i class="fa fa-trash"></i> Delete Response</button>
+											</a>
+											
+										<? } ?>
+										
+									</li>
+								
+								<? } ?>
+							
+							<? } ?>
 						
 						<? } ?>
 					

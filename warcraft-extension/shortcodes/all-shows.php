@@ -19,11 +19,15 @@ function all_shows_func( $atts ) {
 						);
 	}
 	
-	$sorting = array();
+	$sorting = array(
+					'orderby'     => 'meta_value_database_id',
+					'order'       => 'desc',
+					);
+	
 	if( $_REQUEST['sort_by'] ) {
 		if( $_REQUEST['sort_by'] == 'Most recent' ) {
 			$sorting = array(
-							'orderby'     => 'date',
+							'orderby'     => 'meta_value_database_id',
 							'order'       => 'desc',
 							);
 		}
@@ -100,8 +104,8 @@ function all_shows_func( $atts ) {
 						
 						<span>SORT BY</span>
 						<select name="sort_by">
-							<option name="alphabet"> Alphabetically </option>
 							<option name="recent"> Most recent </option>
+							<option name="alphabet"> Alphabetically </option>
 						</select>
 						
 						<span>GAMES</span>
@@ -146,15 +150,9 @@ function all_shows_func( $atts ) {
 						
 						<p class="note">
 							<span class="yellow">Note </span> 
-							If a podcast is not tagged explicit, but you feel it should be, 
-							please <a href="/contact/"> <span class="blue">contact us</span> </a> and we will be sure to take a look and tag if necessary!
-							
-							<!--
 							if a podcast is not tagged explicit, but you feel it should be, please 
 							<a href="/contact/"> <span class="blue">contact us</span> </a>
 							and we will be sure to take a look and tag if necassary!
-							-->
-							
 						</p>
 					
 					</div>
@@ -206,9 +204,9 @@ function all_shows_func( $atts ) {
 						
 							<p style="text-align: center;">
 								<img loading="lazy" class="wp-image-3240 aligncenter" style="text-align: center;" 
-								src="https://warcraftradio.com/wp-content/uploads/2019/11/FM_LOGO_GRAD.png" alt="" 
+								src="https://dev.warcraftradio.com/wp-content/uploads/2019/11/FM_LOGO_GRAD.png" alt="" 
 								width="100" height="100"
-								srcset="https://warcraftradio.com/wp-content/uploads/2019/11/FM_LOGO_GRAD.png 250w, https://warcraftradio.com/wp-content/uploads/2019/11/FM_LOGO_GRAD-150x150.png 150w" 
+								srcset="https://dev.warcraftradio.com/wp-content/uploads/2019/11/FM_LOGO_GRAD.png 250w, https://dev.warcraftradio.com/wp-content/uploads/2019/11/FM_LOGO_GRAD-150x150.png 150w" 
 								sizes="(max-width: 100px) 100vw, 100px">
 							</p>
 						
@@ -216,7 +214,7 @@ function all_shows_func( $atts ) {
 							<p style="text-align: center;" class="left-text">
 								POWERED BY
 								<br>
-								<a href="/shows/realm-maintenance/">
+								<a href="https://dev.warcraftradio.com/shows/realm-maintenance/">
 								<span style="color: #ffcc00;">REALM </span>
 								<span style="color: #ffcc00;">MAINTENANCE</span></a>
 							</p>
@@ -226,7 +224,7 @@ function all_shows_func( $atts ) {
 						<div class="right">
 							<p class="right-text">Latest <span style="color: #ffcc00;">Episode</span></p>
 							
-							<iframe style="border: solid 1px #dedede;" src="https://app.stitcher.com/splayer/f/27020/78514055" width="220" height="100" frameborder="0" scrolling="no"></iframe>
+							<iframe style="border: solid 1px #dedede;" src="https://app.stitcher.com/splayer/f/27020/77335703" width="220" height="100" frameborder="0" scrolling="no"></iframe>
 							
 							<!--
 							<iframe src="https://anchor.fm/realm-maintenance/embed" height="102px" width="400px" frameborder="0" scrolling="no"></iframe>

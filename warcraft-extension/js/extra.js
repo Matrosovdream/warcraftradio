@@ -49,7 +49,6 @@ jQuery(document).on('click', '.edit-podcast-link', function() {
 jQuery(document).on('click', '.submit-review-link', function() {
 	
 	var id = jQuery(this).attr('data-id');
-	
 	jQuery('#popup-leave-review input[name="podcast_id"]').val( id );	
 	
 });	
@@ -72,7 +71,7 @@ jQuery(document).on('click', '#link-edit-review', function() {
 		jQuery('#popup-edit-review').html( response );
 	});		
 	
-});		
+});	
 
 
 jQuery(document).on('click', '.podcast-filter input[type="checkbox"], .podcast-filter input[type="radio"]', function() {
@@ -188,6 +187,84 @@ jQuery(document).on('submit', '#popup-leave-review form, #popup-edit-review form
 });
 
 
+jQuery(document).on('click', '#link-response-to-review', function() {
+	
+	var review_id = jQuery(this).attr('data-review-id');
+	jQuery('#popup-response-to-review input[name="review_id"]').val( review_id );
+	
+});	
+
+
+jQuery(document).on('submit', '#popup-response-to-review form, #popup-edit-response form', function() {
+	
+	var review_sending = true;
+	
+	//if( review_sending ) { return false; }
+	
+	var data = jQuery(this).serialize();
+	var val = jQuery(this).find('textarea[name="review"]').val();
+	
+	console.log(val);
+	console.log(data);
+	
+	if( val.length < 25 || val.length > 2000 ) {
+		review_sending = false;
+		jQuery(this).find('.notice.red').show();
+	} else {
+		jQuery(this).find('.notice.red').hide();
+	}
+	
+	if( review_sending ) {
+		
+		jQuery(this).find('.notice.red').hide();
+		jQuery(this).find('button').attr('disabled', true);
+
+		jQuery.post( '/wp-admin/admin-ajax.php', data, function(response) {
+			
+			jQuery('.form-review').hide();
+			jQuery('.success').show();
+			
+			window.location.reload();
+			
+		});
+		
+	}
+	
+	return false;
+	
+});
+
+
+jQuery(document).on('click', '.popup-edit-response', function() {
+	
+	var id = jQuery(this).attr('data-id');
+	
+	var data = {
+		action: 'podcast_edit_response',
+		id: id
+	};
+	
+	console.log(data);
+	
+	jQuery('#popup-edit-response').html( 'Loading...' );
+
+	jQuery.post( '/wp-admin/admin-ajax.php', data, function(response) {
+		jQuery('#popup-edit-response').html( response );
+	});		
+	
+});	
+
+
+jQuery(document).on('click', '.remove-audiofile', function() {
+	
+	jQuery('.audio-name').remove();	
+	jQuery('input[name="remove_audio"]').val('Y');	
+	
+});	
+
+
+
+/*
 jQuery(document).on('submit', '#popup-edit-podcast form', function() {
 	
 	var data = jQuery(this).serialize();
@@ -210,6 +287,7 @@ jQuery(document).on('submit', '#popup-edit-podcast form', function() {
 	return false;
 	
 });
+*/
 
 
 function openReviewPopup( id ) {

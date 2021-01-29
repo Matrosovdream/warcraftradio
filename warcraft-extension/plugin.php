@@ -29,6 +29,8 @@ require_once( 'shortcodes/my-shows.php' );
 require_once( 'shortcodes/podcast-reviews.php' );
 require_once( 'shortcodes/popups.php' );
 
+require_once( 'admin/pages.php' );
+
 
 if( $_GET['update_podcasts'] ) {
 	
@@ -42,7 +44,7 @@ if( $_GET['update_podcasts'] ) {
 		//$PD->ClearPodcasts();
 		$PD->UpdatePodcasts();
 		
-		die();
+		die('All the podcasts are loaded.');
 		
 	}
 	

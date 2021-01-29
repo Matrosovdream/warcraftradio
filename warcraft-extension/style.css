@@ -258,13 +258,13 @@ hr.popup-middle {
 
 .popup-bottom .left {
 	float: left;
-	width: 65%;
+	width: 50%;
 	text-align: left;
 }
 
 .popup-bottom .right {
 	float: right;
-	width: 35%;
+	width: 50%;
 	text-align: right;
 }
 
@@ -399,7 +399,6 @@ hr.popup-middle {
 
 .filter-tags li input[type="checkbox"] {
 	float: left;
-	display: block!important;
 }	
 
 .filter-tags li label {
@@ -423,6 +422,10 @@ hr.popup-middle {
 	margin-bottom: 20px;
 	width: 70%;
 	padding-bottom: 10px;
+}
+
+.list-reviews ul li.response {
+	margin-left: 70px;
 }
 
 .list-reviews ul .title {
@@ -494,7 +497,7 @@ hr.popup-middle {
 
 
 #popup-edit-podcast {
-	height: 670px;
+	/*height: 670px;*/
 }
 
 #popup-edit-podcast .block {
@@ -785,6 +788,16 @@ input[type="radio"] {
 	width: 55%!important;
 }
 
+.audio-player audio {
+	height: 36px;
+}
+
+.audio-title {
+	font-weight: bold;
+    font-size: 17px;
+    margin-bottom: -10px;
+    text-transform: uppercase;
+}
 
 
 @media (max-width: 767px) {

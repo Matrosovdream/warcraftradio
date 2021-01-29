@@ -112,8 +112,8 @@ Class PodcastDirectory {
 		$args = array(
 			'numberposts' => 500,
 			'category'    => 0,
-			'orderby'     => 'title',
-			'order'       => 'asc',
+			'orderby'     => 'date',
+			'order'       => 'desc',
 			'include'     => array(),
 			'exclude'     => array(),
 			//'meta_key'    => 'tags',
@@ -232,6 +232,10 @@ Class PodcastDirectory {
 		
 		foreach( $items as $item ) {
 			
+			$item_parent_id = get_post_meta( $item->ID, "parent_id" )[0];
+			
+			if( $item_parent_id ) { continue; }
+			
 			$reviews[] = array(
 								"ID" => $item->ID,
 								"title" => $item->post_title,
@@ -240,6 +244,48 @@ Class PodcastDirectory {
 								"podcast_id" => get_post_meta( $item->ID, "podcast_id" )[0],
 								"rating" => get_post_meta( $item->ID, "rating" )[0],
 								"user_id" => get_post_meta( $item->ID, "user_id" )[0],
+								"parent_id" => $item_parent_id,
+								);
+			
+		}
+
+		return $reviews;
+		
+	}
+	
+	
+	function GetChildReviews( $review_id ) {
+		
+		$reviews = array();
+		
+		if( !$review_id ) {
+			return $reviews;
+		}
+		
+		$items = get_posts( array(
+			'numberposts' => 500,
+			'category'    => 0,
+			'orderby'     => 'date',
+			'order'       => 'DESC',
+			'include'     => array(),
+			'exclude'     => array(),
+			'meta_key'    => 'parent_id',
+			'meta_value'  => $review_id,
+			'post_type'   => 'podcast_reviews',
+			'suppress_filters' => true, // подавление работы фильтров изменения SQL запроса
+		) );
+		
+		foreach( $items as $item ) {
+			
+			$reviews[] = array(
+								"ID" => $item->ID,
+								"title" => $item->post_title,
+								"content" => $item->post_content,
+								"post_date" => $item->post_date,
+								"podcast_id" => get_post_meta( $item->ID, "podcast_id" )[0],
+								"rating" => get_post_meta( $item->ID, "rating" )[0],
+								"user_id" => get_post_meta( $item->ID, "user_id" )[0],
+								"parent_id" => $item_parent_id,
 								);
 			
 		}

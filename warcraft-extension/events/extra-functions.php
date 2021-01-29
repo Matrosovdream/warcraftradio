@@ -24,6 +24,8 @@ function podcast_details_callback() {
 		$image = false;
 	}	
 	
+	$audio_url = wp_get_attachment_url( $meta['audio'][0] );
+	
 	/*echo "<pre>";
 	print_r($podcast_db);
 	echo "</pre>";*/
@@ -114,8 +116,17 @@ function podcast_details_callback() {
 							<button class="btnpd"><i class="fa fa-book"></i> Read All Reviews</button>
 						</a>
 					<? } ?>
+					
+					<audio src="https://dev.warcraftradio.com/wp-content/uploads/2021/01/English-Languagecast-feat.-Capn-Tuni-%E2%80%94-Learn-English-Podcast_-Christmas-Episode-Intro-feat.-Capn-Tuni.mp3" autoplay loop></audio>
 				
 				</div>
+				
+				<? if( $audio_url ) { ?>
+					<p class="audio-title">Preview this show</p>
+					<div class="audio-player">
+						<? echo do_shortcode('[audio mp3="'.$audio_url.'"]'); ?>
+					</div>
+				<? } ?>
 				
 			</div>
 			<div style="clear: both;"></div>
@@ -136,7 +147,11 @@ function podcast_details_callback() {
 						Hosted By
 					</p>
 					<p class="value">
-						<? echo $podcast_db['itunes_author']; ?>
+						<? if( $meta['itunes_author'][0] ) { ?>
+							<? echo $meta['itunes_author'][0]; ?>
+						<? } else { ?>
+							<? echo $podcast_db['itunes_author']; ?>
+						<? } ?>
 					</p>
 				</div>
 				
@@ -182,7 +197,6 @@ function podcast_details_callback() {
 						</span>
 					<? } ?>
 					
-									
 					<? if( $podcast_db['website'] ) { ?>
 						<span class="block">
 							<i class="fas fa-globe"></i>
@@ -246,6 +260,33 @@ function podcast_details_callback() {
 						</span>
 					<? } ?>
 					
+					<? if( $meta['facebook'][0] ) { ?>
+						<span class="block" style="margin-right: 0;">
+							<i class="fab fa-facebook"></i>
+							<a href="<? echo $meta['facebook'][0]; ?>" target="_blank">
+								<span class="text">Facebook</span>
+							</a>	
+						</span>
+					<? } ?>
+					
+					<? if( $meta['instagram'][0] ) { ?>
+						<span class="block" style="margin-right: 0;">
+							<i class="fab fa-instagram"></i>
+							<a href="<? echo $meta['instagram'][0]; ?>" target="_blank">
+								<span class="text">Instagram</span>
+							</a>	
+						</span>
+					<? } ?>
+					
+					<? if( $meta['patreon'][0] ) { ?>
+						<span class="block" style="margin-right: 0;">
+							<i class="fab fa-patreon"></i>
+							<a href="<? echo $meta['patreon'][0]; ?>" target="_blank">
+								<span class="text">Patreon</span>
+							</a>	
+						</span>
+					<? } ?>
+					
 				</div>
 			</div>
 			
@@ -289,7 +330,7 @@ function podcast_edit_callback() {
 	
 		<h1>Edit podcast - <?=$podcast['post_title'];?></h1>
 	 
-		<form action="" method="POST" class="edit-podcast">
+		<form action="" enctype="multipart/form-data" method="post" class="edit-podcast">
 		
 			<input type="hidden" name="action" value="update_podcast" />
 			<input type="hidden" name="ID" value="<? echo $post_id; ?>" />
@@ -323,9 +364,47 @@ function podcast_edit_callback() {
 				<input type="text" name="website" value="<? echo $meta['website'][0] ?>" />
 			</div>	
 			<div class="block">
+				<p>Hosted by</p>
+				<input type="text" name="itunes_author" value="<? echo $meta['itunes_author'][0] ?>" />
+			</div>	
+			<div class="block">
+				<p>Facebook</p>
+				<input type="text" name="facebook" value="<? echo $meta['facebook'][0] ?>" />
+			</div>	
+			<div class="block">
+				<p>Instagram</p>
+				<input type="text" name="instagram" value="<? echo $meta['instagram'][0] ?>" />
+			</div>
+			<div class="block">
+				<p>Patreon</p>
+				<input type="text" name="patreon" value="<? echo $meta['patreon'][0] ?>" />
+			</div>
+			<div class="block">
 				<p>Contains Explicit Content</p>
 				<input type="checkbox" name="explicit" value="1" <? if( $meta['explicit'][0] ) { ?> checked <? } ?> />
 			</div>
+			
+			<div class="block" style="width: 100%; height: auto;">
+			
+				<?
+				$audio_url = wp_get_attachment_url( $meta['audio'][0] );
+				$audio_name = basename( $audio_url );
+				?>
+			
+				<p>Audio</p>
+				<input name="audio" type="file" accept="audio/mpeg3" />
+				
+				<input name="remove_audio" type="hidden" value="" />
+				
+				<? if( $audio_name ) { ?>
+					<p class="audio-name"> 
+						<? echo $audio_name; ?>  
+						<a href="#" class="remove-audiofile"> (remove) </a>
+					</p>
+				<? } ?>
+				
+			</div>
+			
 			<div class="block tags">
 				<p>Tags (up to 4)</p>
 				
@@ -347,6 +426,13 @@ function podcast_edit_callback() {
 				</ul>
 				
 			</div>	
+			
+			<div class="block" style="width: 100%; margin-bottom: 20px; height: auto;">
+				<p>Show description</p>
+				
+				<textarea name="description" style="height: 200px;"><? echo $podcast['post_content']; ?></textarea>
+				
+			</div>
 			
 			<div style="clear: both;"></div>
 			
@@ -454,4 +540,78 @@ function podcast_edit_review_callback() {
 
 	wp_die(); // выход нужен для того, чтобы в ответе не было ничего лишнего, только то что возвращает функция
 }
+
+
+add_action('wp_ajax_podcast_edit_response', 'podcast_edit_response_callback');
+add_action('wp_ajax_nopriv_podcast_edit_response', 'podcast_edit_response_callback');
+function podcast_edit_response_callback() {
+	
+	$post_id = $_POST['id'];
+	
+	$PC = new PodcastDirectory;
+
+	if( $post_id ) {
+		$review = $PC->GetReviewByID( $post_id );	
+		//print_r($review);
+	}
+
+	ob_start();
+	?>
+	
+		<? if( !$PC->canUserEditReview( $post_id ) || !$post_id ) { ?>
+		
+			<p class="no-rights">No access, genius</p>
+		
+		<? } else { ?>
+	 
+			<h1>Edit response #<?=$post_id;?></h1>
+			
+			<p class="success" style="text-align: center; display: none;">Your response has been edited!</p>
+			
+			<form action="" method="POST" class="form-review">
+			
+				<input type="hidden" name="action" value="edit_response" />
+				<input type="hidden" name="ID" value="<? echo $review['ID']; ?>" />
+				
+				<div class="block">
+				
+					<p>Your message</p>
+					<textarea name="review" style="height: 250px;"><? echo $review['content']; ?></textarea>
+					
+					<p class="notice red" style="display: none;"> Minimum 25 letters and maximum 2000 </p>
+					<p class="notice-stars red" style="display: none;"> Leave a star rating </p>
+					
+				</div>	
+				
+				<br/>
+				
+				<div class="block">
+					<input type="submit" value="Send!" />
+				</div>
+			
+			</form>
+			
+			<button title="Close (Esc)" type="button" class="mfp-close">×</button>
+		
+		<? } ?>
+	 
+	<?
+	$content = ob_get_contents();
+	ob_end_clean();
+	
+	echo $content;
+
+	wp_die(); // выход нужен для того, чтобы в ответе не было ничего лишнего, только то что возвращает функция
+}
+
+
+
+
+
+
+
+
+
+
+
 ?>
